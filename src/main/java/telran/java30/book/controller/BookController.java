@@ -5,11 +5,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import telran.java30.book.dto.AuthorDto;
 import telran.java30.book.dto.BookDto;
 import telran.java30.book.servise.BookServise;
 
@@ -31,6 +32,14 @@ public class BookController {
 	@DeleteMapping("/{isbn}")
 	public BookDto removeBook(@PathVariable long isbn) {
 		return bookServise.removeBook(isbn);
+	}
+	@DeleteMapping("/author/{authorName}")
+	public AuthorDto removeAuthor(@PathVariable String authorName) {
+		return bookServise.removeAuthor(authorName);
+	}
+	@PutMapping("/{isbn}/title/{title}")
+	public BookDto updateBook(@PathVariable long isbn,@PathVariable String title) {
+		return bookServise.updateBook(isbn, title);
 	}
 	
 }

@@ -3,7 +3,6 @@ package telran.java30.book.servise;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,7 @@ public class BookServiseImpl implements BookServise {
 	@Autowired
 	BookRepository bookRepository;
 	@Autowired
-	AutorRepository autorRepository;
+	AutorRepository authorRepository;
 
 	@Override
 	@Transactional
@@ -39,8 +38,8 @@ public class BookServiseImpl implements BookServise {
 
 		Set<AuthorDto> authorDtos = bookDto.getAuthors();
 		Set<Author> authors = authorDtos.stream()
-				.map(a -> autorRepository.findById(a.getName())
-						.orElse(autorRepository.save(new Author(a.getName(), a.getBirthDate()))))
+				.map(a -> authorRepository.findById(a.getName())
+						.orElse(authorRepository.save(new Author(a.getName(), a.getBirthDate()))))
 				.collect(Collectors.toSet());
 		Book book = new Book(bookDto.getIsbn(), bookDto.getTitle(), authors, publisher);
 		bookRepository.save(book);
@@ -49,34 +48,73 @@ public class BookServiseImpl implements BookServise {
 
 	@Override
 	public BookDto findBookByIsbn(long isbn) {
-		Book book = bookRepository.findById(isbn).orElseThrow(()->  new BookNotFoundExeption(isbn));
-		
+		Book book = bookRepository.findById(isbn).orElseThrow(() -> new BookNotFoundExeption(isbn));
+
 		return bookToBookDto(book);
 	}
 
 	private BookDto bookToBookDto(Book book) {
-		
-		return BookDto.builder().isbn(book.getIsbn())
-				.title(book.getTitle())
+
+		return BookDto.builder().isbn(book.getIsbn()).title(book.getTitle())
 				.publisher(book.getPublisher().getPublisherName())
-				.authors(book.getAuthors().stream().map(this::autorToAutorDto).collect(Collectors.toSet()))
-				.build();
+				.authors(book.getAuthors().stream().map(this::autorToAutorDto).collect(Collectors.toSet())).build();
 	}
-	
+
 	private AuthorDto autorToAutorDto(Author author) {
-		return AuthorDto.builder().name(author.getName())
-				.birthDate(author.getBirthDate()).build();
+		return AuthorDto.builder().name(author.getName()).birthDate(author.getBirthDate()).build();
 	}
 
 	@Override
 	@Transactional
 	public BookDto removeBook(long isbn) {
-		Book book = bookRepository.findById(isbn).orElseThrow(()-> new BookNotFoundExeption(isbn));
-		if(book== null) return null;
-	bookRepository.deleteById(isbn);
+		Book book = bookRepository.findById(isbn).orElseThrow(() -> new BookNotFoundExeption(isbn));
+		bookRepository.deleteById(isbn);
 		return bookToBookDto(book);
 	}
+
+	@Override
+	public Iterable<BookDto> findBooksByAuthor(String authorName) {
+		Author author = authorRepository.findById(authorName).orElseThrow(()->new BookNotFoundExeption(0));
+		
+		return author.getBooks().stream().map(this::bookToBookDto).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Iterable<BookDto> findBooksByPublisher(String publisherName) {
+		Publisher publisher = publisherRepository.findById(publisherName).orElseThrow(()-> new BookNotFoundExeption(0));
+		
+		return publisher.getBooks().stream().map(this::bookToBookDto).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Iterable<AuthorDto> findBookAuthor(Long isbn) {
+	Book book = bookRepository.findById(isbn).orElseThrow(()-> new BookNotFoundExeption(isbn));
+		return book.getAuthors().stream().map(this::autorToAutorDto).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Iterable<String> findPublishersByAuthor(String authorName) {
 	
-	
+		return publisherRepository.findByBooksAuthorsName(authorName).stream().map(p->p.getPublisherName()).collect(Collectors.toSet());
+	}
+
+	@Override
+	@Transactional
+	public AuthorDto removeAuthor(String authorName) {
+		Author author = authorRepository.findById(authorName).orElse(null);
+		if (author == null) {
+			return null;
+		}
+		authorRepository.deleteById(authorName);
+		return autorToAutorDto(author);
+	}
+
+	@Override
+	@Transactional
+	public BookDto updateBook(Long isbn, String title) {
+		Book book = bookRepository.findById(isbn).orElseThrow(() -> new BookNotFoundExeption(isbn));
+	book.setTitle(title);
+	return bookToBookDto(book);
+	}
 
 }
