@@ -74,7 +74,7 @@ public class BookServiseImpl implements BookServise {
 
 	@Override
 	public Iterable<BookDto> findBooksByAuthor(String authorName) {
-		
+
 		/*
 		 * Author author = authorRepository.findById(authorName).orElseThrow(()->new
 		 * BookNotFoundExeption(0));
@@ -83,7 +83,8 @@ public class BookServiseImpl implements BookServise {
 		 * author.getBooks().stream().map(this::bookToBookDto).collect(Collectors.toSet(
 		 * ));
 		 */
-		return bookRepository.findBooksByAuthorsName(authorName).stream().map(this::bookToBookDto).collect(Collectors.toSet());
+		return bookRepository.findBooksByAuthorsName(authorName).stream().map(this::bookToBookDto)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -97,20 +98,23 @@ public class BookServiseImpl implements BookServise {
 		 * publisher.getBooks().stream().map(this::bookToBookDto).collect(Collectors.
 		 * toSet());
 		 */
-		return bookRepository.findBooksByPublisher(publisherName).stream().map(this::bookToBookDto).collect(Collectors.toSet());
+		return bookRepository.findBooksByPublisher(publisherName).stream().map(this::bookToBookDto)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
 	public Iterable<AuthorDto> findBookAuthor(Long isbn) {
-	Book book = bookRepository.findById(isbn).orElseThrow(()-> new BookNotFoundExeption(isbn));
+		Book book = bookRepository.findById(isbn).orElseThrow(() -> new BookNotFoundExeption(isbn));
 		return book.getAuthors().stream().map(this::autorToAutorDto).collect(Collectors.toSet());
 	}
 
 	@Override
 	public Iterable<String> findPublishersByAuthor(String authorName) {
-	
-		//return publisherRepository.findByBooksAuthorsName(authorName).stream().map(p->p.getPublisherName()).collect(Collectors.toSet());
-		return bookRepository.findBooksByAuthorsName(authorName).stream().map(b->b.getPublisher().getPublisherName()).collect(Collectors.toSet());
+
+		// return
+		// publisherRepository.findByBooksAuthorsName(authorName).stream().map(p->p.getPublisherName()).collect(Collectors.toSet());
+		return bookRepository.findBooksByAuthorsName(authorName).stream().map(b -> b.getPublisher().getPublisherName())
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -128,8 +132,8 @@ public class BookServiseImpl implements BookServise {
 	@Transactional
 	public BookDto updateBook(Long isbn, String title) {
 		Book book = bookRepository.findById(isbn).orElseThrow(() -> new BookNotFoundExeption(isbn));
-	book.setTitle(title);
-	return bookToBookDto(book);
+		book.setTitle(title);
+		return bookToBookDto(book);
 	}
 
 }
