@@ -74,16 +74,30 @@ public class BookServiseImpl implements BookServise {
 
 	@Override
 	public Iterable<BookDto> findBooksByAuthor(String authorName) {
-		Author author = authorRepository.findById(authorName).orElseThrow(()->new BookNotFoundExeption(0));
 		
-		return author.getBooks().stream().map(this::bookToBookDto).collect(Collectors.toSet());
+		/*
+		 * Author author = authorRepository.findById(authorName).orElseThrow(()->new
+		 * BookNotFoundExeption(0));
+		 * 
+		 * return
+		 * author.getBooks().stream().map(this::bookToBookDto).collect(Collectors.toSet(
+		 * ));
+		 */
+		return bookRepository.findBooksByAuthorsName(authorName).stream().map(this::bookToBookDto).collect(Collectors.toSet());
 	}
 
 	@Override
 	public Iterable<BookDto> findBooksByPublisher(String publisherName) {
-		Publisher publisher = publisherRepository.findById(publisherName).orElseThrow(()-> new BookNotFoundExeption(0));
-		
-		return publisher.getBooks().stream().map(this::bookToBookDto).collect(Collectors.toSet());
+		/*
+		 * Publisher publisher =
+		 * publisherRepository.findById(publisherName).orElseThrow(()-> new
+		 * BookNotFoundExeption(0));
+		 * 
+		 * return
+		 * publisher.getBooks().stream().map(this::bookToBookDto).collect(Collectors.
+		 * toSet());
+		 */
+		return bookRepository.findBooksByPublisher(publisherName).stream().map(this::bookToBookDto).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -95,7 +109,8 @@ public class BookServiseImpl implements BookServise {
 	@Override
 	public Iterable<String> findPublishersByAuthor(String authorName) {
 	
-		return publisherRepository.findByBooksAuthorsName(authorName).stream().map(p->p.getPublisherName()).collect(Collectors.toSet());
+		//return publisherRepository.findByBooksAuthorsName(authorName).stream().map(p->p.getPublisherName()).collect(Collectors.toSet());
+		return bookRepository.findBooksByAuthorsName(authorName).stream().map(b->b.getPublisher().getPublisherName()).collect(Collectors.toSet());
 	}
 
 	@Override

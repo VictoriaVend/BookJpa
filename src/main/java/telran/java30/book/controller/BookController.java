@@ -41,5 +41,23 @@ public class BookController {
 	public BookDto updateBook(@PathVariable long isbn,@PathVariable String title) {
 		return bookServise.updateBook(isbn, title);
 	}
+	@GetMapping("/books/author/{authorName}")
+	public Iterable<BookDto> findBooksByAuthor(@PathVariable String authorName){
+		return bookServise.findBooksByAuthor(authorName);
+	}
+	
+	@GetMapping("/books/publisher/{publisher}")
+	public Iterable<BookDto>findBooksByPublisher(@PathVariable String publisher){
+		return bookServise.findBooksByPublisher(publisher);
+	}
+	
+	@GetMapping("/autors/book/{isbn}")
+	public Iterable<AuthorDto> findAuthorsByBooks(@PathVariable Long isbn){
+		return bookServise.findBookAuthor(isbn);
+	}
+	@GetMapping("/publisher/author/{author}")
+	public Iterable<String> findPublisherByAuthor(@PathVariable String author){
+		return bookServise.findPublishersByAuthor(author);
+	}
 	
 }
